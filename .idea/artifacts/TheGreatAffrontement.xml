@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="TheGreatAffrontement">
+    <output-path>$PROJECT_DIR$/../../serveurs/spigot/plugins</output-path>
+    <root id="archive" name="TheGreatAffrontement.jar">
+      <element id="module-output" name="thegreataffrontement" />
+    </root>
+  </artifact>
+</component>
