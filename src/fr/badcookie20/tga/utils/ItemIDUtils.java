@@ -1,16 +1,61 @@
 package fr.badcookie20.tga.utils;
 
+import fr.badcookie20.tga.cards.Card;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * This utility class is useful to keep track of which card maps to which item.
+ * It prevents side-effects.
+ */
 public class ItemIDUtils {
 
     private static final String ID_TAG = "TGAItemID";
+    private static final Map<Integer, Card> registeredCards;
+    private static int maxId;
+
+    static {
+        registeredCards = new HashMap<>();
+        maxId = 999;
+    }
 
     /**
-     * Adds the specified id to the specified item, in the tag
+     * Registers a card in the system.
+     * @param card the card to be registered
+     * @return the id the card has been given
+     */
+    public static int registerCard(Card card) {
+        maxId += 1;
+        registeredCards.put(maxId, card);
+        return maxId;
+    }
+
+    /**
+     * Gets the card corresponding to the id.
+     * @param id the id
+     * @return a card, or <code>null</code> if this id has not been yet assigned.
+     */
+    public static Card getRegisteredCardByID(int id) {
+        return registeredCards.get(id);
+    }
+
+    /**
+     * Gets the card corresponding to the item.
+     * @param item the item.
+     * @return a card, or <code>null</code> if this Item has not been registered/is incorrect.
+     */
+    public static Card getCardByItem(ItemStack item) {
+        return getRegisteredCardByID(getItemID(item));
+    }
+
+    /**
+     * Adds the specified id to the specified item, in the tag.
+     * Does not save it in the registered cards.
      * @param id the id in the ID_TAG tag. If the id is negative, this method does nothing.
      * @return an item with the id.
      */
