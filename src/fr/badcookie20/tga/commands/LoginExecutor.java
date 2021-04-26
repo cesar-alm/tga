@@ -22,7 +22,7 @@ public class LoginExecutor implements CommandExecutor {
         TGAPlayer p = TGAPlayer.getPlayer((Player) sender);
 
         if(!p.checkNew()) {
-            p.sendImpossible(ChatColor.RED + "Vous êtes déjà enregistré dans le jeu !");
+            p.sendImpossible(ChatColor.RED + "Vous êtes déjà enregistré dans le jeu ! Amusez-vous bien !");
             return false;
         }
 
