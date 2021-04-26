@@ -1,7 +1,7 @@
 package fr.badcookie20.tga;
 
-import fr.badcookie20.tga.cards.creatures.CreaturesList;
-import fr.badcookie20.tga.cards.enchantment.EnchantmentList;
+import fr.badcookie20.tga.cards.creatures.Creature;
+import fr.badcookie20.tga.cards.enchantment.Enchantment;
 import fr.badcookie20.tga.commands.*;
 import fr.badcookie20.tga.inventories.manager.InventoriesManager;
 import fr.badcookie20.tga.listeners.ChestOpenListener;
@@ -43,8 +43,8 @@ public class Plugin extends JavaPlugin {
         instance = this;
         
         try {
-            this.getClassLoader().loadClass(CreaturesList.class.getName());
-            this.getClassLoader().loadClass(EnchantmentList.class.getName());
+            this.getClassLoader().loadClass(Creature.class.getName());
+            this.getClassLoader().loadClass(Enchantment.class.getName());
             this.getClassLoader().loadClass(NextUtils.class.getName());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

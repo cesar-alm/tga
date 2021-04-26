@@ -25,12 +25,12 @@ public class BannedCardsInventory extends SaveableInventory {
             return this.getSavedInventory(p);
         }
 
-        List<Card> cards = p.getBattleField().getCards(BattleField.Location.BANNED);
+        List<Card> cards = p.getBattleField().getCards(BattleField.Location.BANNED_CARDS);
 
         Inventory inv = BukkitUtils.createInventory(cards, 1, ChatColor.BLACK + "Cartes bannies");
 
         for(Card c : cards) {
-            inv.addItem(c.get());
+            inv.addItem(c.createItemStack());
         }
 
         inv.setItem(inv.getSize() - 1, GO_BACK);

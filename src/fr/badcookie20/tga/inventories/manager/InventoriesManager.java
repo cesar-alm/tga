@@ -109,7 +109,8 @@ public class InventoriesManager {
     }
 
     /**
-     * Notifies the specified inventory that it has been updated since the last time the player opened it
+     * Notifies the specified inventory that it has been updated since the last time the player opened it.
+     * For clarity, prefer using BattleField.Location.xxx.update(p) when applicable.
      * @param p the player whose inventory has changed
      * @param type the type of the inventory
      */

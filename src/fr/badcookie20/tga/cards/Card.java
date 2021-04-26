@@ -1,5 +1,6 @@
 package fr.badcookie20.tga.cards;
 
+import fr.badcookie20.tga.utils.ItemUIDUtils;
 import fr.badcookie20.tga.utils.Prefixes;
 import org.bukkit.inventory.ItemStack;
 
@@ -8,16 +9,23 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class Card {
 
+    private final Entity<? extends Card> entity;
+
     protected String name;
     private final int id;
     private final Type type;
     private final Rarity rarity;
+    protected final int uid;
 
-    public Card(int id, String name, Type type, Rarity rarity) {
+    public Card(Entity<? extends Card> entity, int id, String name, Type type, Rarity rarity) {
+        this.entity = entity;
+
         this.name = name;
         this.type = type;
         this.rarity = rarity;
         this.id = id;
+
+        this.uid = ItemUIDUtils.registerCard(this);
     }
 
     public boolean isSimilar(Card card) {
@@ -32,11 +40,15 @@ public abstract class Card {
         return id;
     }
 
+    public Entity<? extends Card> getEntity() {
+        return entity;
+    }
+
     public Type getType() {
         return this.type;
     }
 
-    public abstract ItemStack get();
+    public abstract ItemStack createItemStack();
 
     public enum Type {
         MANA("Mana"),

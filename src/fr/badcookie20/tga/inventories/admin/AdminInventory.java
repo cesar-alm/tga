@@ -38,7 +38,7 @@ public class AdminInventory extends SaveableInventory {
 
         inv.setItem(1, BukkitUtils.createItemStack(MONITOR_EVERYTHING, MONITOR_EVERYTHING_NAME + (p.isMonitoring() ? ENABLED : DISABLED), null));
         inv.setItem(3, BukkitUtils.createItemStack(FORBIDDEN, FORBIDDEN_NAME,
-                Collections.singletonList(ChatColor.GOLD + "" + ConfigUtils.getForbiddenCards().size() + ChatColor.GREEN + " carte(s) interdite(s)")));
+                Collections.singletonList(ChatColor.GOLD + "" + ConfigUtils.getForbiddenEntities().size() + ChatColor.GREEN + " carte(s) interdite(s)")));
         inv.setItem(5, BukkitUtils.createItemStack(CURRENT_BATTLES, CURRENT_BATTLES_NAME,
                 Collections.singletonList(ChatColor.GOLD + "" + BattleField.getBattleFieldsOnce().size() + ChatColor.GREEN + " duel(s) en cours")));
         inv.setItem(7, RELOAD_SERVER);

@@ -8,8 +8,8 @@ public abstract class CastCard extends Card {
 
 	protected int manaCost;
 	
-	public CastCard(int id, String name, Type type, Rarity rarity, int manaCost) {
-		super(id, name, type, rarity);
+	public CastCard(Entity<? extends CastCard> entity, int id, String name, Type type, Rarity rarity, int manaCost) {
+		super(entity, id, name, type, rarity);
 		
 		this.manaCost = manaCost;
 	}

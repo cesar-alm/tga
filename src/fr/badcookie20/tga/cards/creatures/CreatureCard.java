@@ -2,13 +2,12 @@ package fr.badcookie20.tga.cards.creatures;
 
 import fr.badcookie20.tga.cards.Card;
 import fr.badcookie20.tga.cards.EffectCard;
+import fr.badcookie20.tga.cards.Entity;
 import fr.badcookie20.tga.effect.Effect;
-import fr.badcookie20.tga.inventories.manager.InventoriesManager;
-import fr.badcookie20.tga.inventories.manager.InventoryType;
 import fr.badcookie20.tga.player.BattleField;
 import fr.badcookie20.tga.player.BattleField.Location;
 import fr.badcookie20.tga.player.TGAPlayer;
-import fr.badcookie20.tga.utils.CardUtils;
+import fr.badcookie20.tga.utils.CardUtils2;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,8 +27,8 @@ public class CreatureCard extends EffectCard {
 	
 	private int tempDef;
 
-	public CreatureCard(int id, String name, Rarity rarity, int manaCost, CreatureType creatureType, int atk, int def, List<CreatureProperty> properties, Effect... effects) {
-		super(id, name, Type.CREATURE, rarity, manaCost, effects);
+	public CreatureCard(Entity<CreatureCard> entity, int id, String name, Rarity rarity, int manaCost, CreatureType creatureType, int atk, int def, List<CreatureProperty> properties, Effect... effects) {
+		super(entity, id, name, Type.CREATURE, rarity, manaCost, effects);
 		
 		this.creatureType = creatureType;
 		this.atk = atk;
@@ -70,12 +69,12 @@ public class CreatureCard extends EffectCard {
 		tempDef = def;
 	}
 	
-	public void die(BattleField b, TGAPlayer killer) {
+	public void die(BattleField b) {
 		resetDef();
 		if(this.hasProperty(CreatureProperty.BACK_TO_HAND_2) || this.hasProperty(CreatureProperty.BACK_TO_HAND_3)) {
-			b.send(Location.BATTLEFIELD, Location.HAND, this, killer);
+			b.send(Location.BATTLEFIELD, Location.HAND, this);
 		}else{
-			b.send(Location.BATTLEFIELD, Location.GRAVEYARD, this, killer);
+			b.send(Location.BATTLEFIELD, Location.GRAVEYARD, this);
 		}
 	}
 
@@ -85,8 +84,8 @@ public class CreatureCard extends EffectCard {
     }
 	
 	@Override
-	public ItemStack get() {
-		return CardUtils.getItem(name, Card.Type.CREATURE, this.manaCost, this.creatureType, this.effects, atk, tempDef, properties, hasAttacked, this.hashCode());
+	public ItemStack createItemStack() {
+		return CardUtils2.createItemStack(name, Card.Type.CREATURE, this.manaCost, this.creatureType, this.effects, atk, tempDef, properties, hasAttacked, this.uid);
 	}
 
 	public void resetAttack() {
@@ -129,7 +128,7 @@ public class CreatureCard extends EffectCard {
             attackingP.sendImpossible(ChatColor.GREEN + "Votre carte a tué la créature adverse !");
 
             // target dead
-            target.die(targetP.getBattleField(), attackingP);
+            target.die(targetP.getBattleField());
 
             if (attacking.hasProperty(CreatureProperty.OVERPOWERED)) {
                 targetP.getBattleField().damage(attacking.atk - target.tempDef, attackingP);
@@ -141,10 +140,10 @@ public class CreatureCard extends EffectCard {
             attackingP.sendImpossible(ChatColor.GREEN + "Votre créature a infligé " + ChatColor.AQUA + attacking.atk + ChatColor.GREEN + " à votre cible !");
         }
 
-        InventoriesManager.getInstance().update(attackingP, InventoryType.BATTLEFIELD);
-        InventoriesManager.getInstance().update(targetP, InventoryType.BATTLEFIELD);
-        InventoriesManager.getInstance().update(attackingP, InventoryType.GRAVEYARD);
-        InventoriesManager.getInstance().update(targetP, InventoryType.GRAVEYARD);
+        Location.BATTLEFIELD.update(attackingP);
+		Location.BATTLEFIELD.update(targetP);
+		Location.GRAVEYARD.update(attackingP);
+		Location.GRAVEYARD.update(targetP);
     }
 }
 

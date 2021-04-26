@@ -4,6 +4,9 @@ import fr.badcookie20.tga.effect.Effect;
 import fr.badcookie20.tga.exceptions.EffectException;
 import fr.badcookie20.tga.player.TGAPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Superclass of all cards that have effects
  */
@@ -11,8 +14,8 @@ public abstract class EffectCard extends CastCard {
 
 	protected Effect[] effects;
 	
-	public EffectCard(int id, String name, Type type, Rarity rarity, int manaCost, Effect... effects) {
-		super(id, name, type, rarity, manaCost);
+	public EffectCard(Entity<? extends EffectCard> entity, int id, String name, Type type, Rarity rarity, int manaCost, Effect... effects) {
+		super(entity, id, name, type, rarity, manaCost);
 		
 		this.effects = effects;
 	}
@@ -22,9 +25,9 @@ public abstract class EffectCard extends CastCard {
      * @param p le joueur qui les possède sur son champ de bataille
      * @throws EffectException si jamais une erreur est rencontrée lors de l'exécution
      */
-	public void executeEffects(TGAPlayer p) throws EffectException {
+	public void executeAllEffects(TGAPlayer p) throws EffectException {
         for(Effect e : getEffects()) {
-            e.execute(p);
+            e.execute(p, this);
         }
     }
 
@@ -35,10 +38,10 @@ public abstract class EffectCard extends CastCard {
      * @param time le moment du tour
      * @throws EffectException si jamais une erreur est rencontrée lors de l'exécution
      */
-    public void executeEffect(TGAPlayer p, Effect.ExecutionTime time) throws EffectException {
+    public void executeAllEffects(TGAPlayer p, Effect.ExecutionTime time) throws EffectException {
         for(Effect e : getEffects()) {
             if(e.getExecutionTime() == time) {
-                e.execute(p);
+                e.execute(p, this);
             }
         }
     }
@@ -50,14 +53,17 @@ public abstract class EffectCard extends CastCard {
      * @param time le moment du tour
      * @return l'effet correspondant, ou <code>null</code>
      */
-    public Effect getEffect(Effect.ExecutionTime time) {
+    public List<Effect> getAllEffects(Effect.ExecutionTime time) {
+        // TODO rename
+        List<Effect> tempEffects = new ArrayList<>();
+
         if(!hasEffect(time)) return null;
 
         for(Effect effect : effects) {
-            if(effect.getExecutionTime() == time) return effect;
+            if(effect.getExecutionTime() == time) tempEffects.add(effect);
         }
 
-        return null;
+        return tempEffects;
     }
 
     /**
@@ -73,6 +79,12 @@ public abstract class EffectCard extends CastCard {
         }
 
         return false;
+    }
+
+    public void executeAllOpposites(TGAPlayer p) throws EffectException {
+        for(Effect e : effects) {
+            if(e.hasOpposite()) e.executeOpposite(p, this);
+        }
     }
 
     /**

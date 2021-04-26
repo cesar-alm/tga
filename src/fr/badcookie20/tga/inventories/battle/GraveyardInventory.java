@@ -30,7 +30,7 @@ public class GraveyardInventory extends SaveableInventory {
         Inventory inv = BukkitUtils.createInventory(cards, 1, ChatColor.BLACK + "Cimetière");
 
         for(Card c : cards) {
-            inv.addItem(c.get());
+            inv.addItem(c.createItemStack());
         }
 
         inv.setItem(inv.getSize() - 1, GO_BACK);

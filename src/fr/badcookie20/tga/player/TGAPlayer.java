@@ -1,6 +1,7 @@
 package fr.badcookie20.tga.player;
 
 import fr.badcookie20.tga.cards.Card;
+import fr.badcookie20.tga.cards.Entity;
 import fr.badcookie20.tga.cards.creatures.CreatureType;
 import fr.badcookie20.tga.cards.mana.ManaType;
 import fr.badcookie20.tga.inventories.admin.PlayerOptionsInventory;
@@ -53,7 +54,7 @@ public class TGAPlayer {
     private BattleField battlefield;
     private PotentialBattle potentialBattle;
 
-    private List<Card> cardsList;
+    private List<Entity<? extends Card>> entityList;
     private ManaType manaAffinity;
     private CreatureType creatureAffinity;
     private IndividualScoreboard scoreboard;
@@ -70,7 +71,7 @@ public class TGAPlayer {
 
         this.p = p;
         this.battlefield = null;
-        this.cardsList = ConfigUtils.getCards(this);
+        this.entityList = ConfigUtils.getCards(this);
         this.scoreboard = new IndividualScoreboard(p, ChatColor.AQUA + "Duel");
 
         this.manaAffinity = ConfigUtils.getManaAffinity(this);
@@ -83,8 +84,8 @@ public class TGAPlayer {
             return;
         }
 
-        for(Card c : this.cardsList) {
-            if(ConfigUtils.getForbiddenCards().contains(c)) {
+        for(Entity<? extends Card> entity : this.entityList) {
+            if(ConfigUtils.getForbiddenEntities().contains(entity)) {
                 p.sendMessage(ChatColor.RED + "Une ou plusieurs de vos cartes sont interdites, et donc non jouables. Regardez votre liste de cartes pour plus d'informations");
                 return;
             }
@@ -138,12 +139,12 @@ public class TGAPlayer {
 
     /**
      * Adds a card to the player's list, modifies the config and updates the Management and CardList inventories
-     * @param c the card to add
+     * @param entity the entity to add
      */
-    public void addCardToList(Card c) {
-        p.sendMessage(Prefixes.CARD_NAME + c.getName() + ChatColor.AQUA + ChatColor.ITALIC + " a été ajoutée à votre collection");
-        this.cardsList.add(c);
-        ConfigUtils.addCard(c.getID(), this);
+    public void addCardToList(Entity<? extends Card> entity) {
+        p.sendMessage(Prefixes.CARD_NAME + entity.getName() + ChatColor.AQUA + ChatColor.ITALIC + " a été ajoutée à votre collection");
+        this.entityList.add(entity);
+        ConfigUtils.addCard(entity.getID(), this);
         InventoriesManager.getInstance().update(this, InventoryType.CARD_LIST);
         InventoriesManager.getInstance().update(this, InventoryType.MANAGEMENT);
     }
@@ -234,7 +235,7 @@ public class TGAPlayer {
      * Reloads the cards of this object by looking to the config file
      */
     public void reloadCards() {
-        this.cardsList = ConfigUtils.getCards(this);
+        this.entityList = ConfigUtils.getCards(this);
     }
 
     /**
@@ -272,9 +273,10 @@ public class TGAPlayer {
      * @param showManaCards will show or not the mana cards in the list
      * @return the cards list of the player
      */
-    public List<? extends Card> getCardsList(boolean showManaCards) {
-        if(showManaCards) return cardsList;
-        return CardUtils.sortInverted(Card.Type.MANA, cardsList);
+    public List<Entity<? extends Card>> getCardsList(boolean showManaCards) {
+        // TODO if showManaCards
+        return entityList;
+        // return CardUtils2.sortInverted(Card.Type.MANA, entityList);
     }
 
     /**
@@ -357,7 +359,7 @@ public class TGAPlayer {
         if(type == null) {
             return this.getBattleField().getEnemy().getBattleField().getCards(BattleField.Location.BATTLEFIELD).get(clickedSlot);
         }else{
-            return CardUtils.sort(this.getBattleField().getEnemy().getBattleField().getCards(BattleField.Location.BATTLEFIELD), type).get(clickedSlot);
+            return CardUtils2.sort(this.getBattleField().getEnemy().getBattleField().getCards(BattleField.Location.BATTLEFIELD), type).get(clickedSlot);
         }
     }
 
@@ -455,8 +457,8 @@ public class TGAPlayer {
         p1.initScoreboard(p2);
         if(!p1.equals(p2)) p2.initScoreboard(p1);
 
-        p1.battlefield.initDeck(p1.cardsList);
-        if(!p1.equals(p2)) p2.battlefield.initDeck(p2.cardsList);
+        p1.battlefield.initDeck(p1.entityList);
+        if(!p1.equals(p2)) p2.battlefield.initDeck(p2.entityList);
 
         notify(p1.getBukkitPlayer().getName() + " et " + p1.getBukkitPlayer().getName() + " ont débuté un duel");
 
@@ -505,14 +507,12 @@ public class TGAPlayer {
         NextUtils.updateClickedItemOf(winner.getBukkitPlayer(), FORCE_STOP);
         NextUtils.updateClickedItemOf(looser.getBukkitPlayer(), FORCE_STOP);
 
-        InventoriesManager.getInstance().update(winner, InventoryType.BATTLEFIELD);
-        InventoriesManager.getInstance().update(looser, InventoryType.BATTLEFIELD);
-
-        InventoriesManager.getInstance().update(winner, InventoryType.GRAVEYARD);
-        InventoriesManager.getInstance().update(looser, InventoryType.GRAVEYARD);
-
-        InventoriesManager.getInstance().update(winner, InventoryType.BANNED_CARDS);
-        InventoriesManager.getInstance().update(looser, InventoryType.BANNED_CARDS);
+        BattleField.Location.BATTLEFIELD.update(winner);
+        BattleField.Location.BATTLEFIELD.update(looser);
+        BattleField.Location.GRAVEYARD.update(winner);
+        BattleField.Location.GRAVEYARD.update(looser);
+        BattleField.Location.BANNED_CARDS.update(winner);
+        BattleField.Location.BANNED_CARDS.update(looser);
 
         InventoriesManager.getInstance().update(winner, InventoryType.PLAYERS_LIST_STATISTICS);
         InventoriesManager.getInstance().update(looser, InventoryType.PLAYERS_LIST_STATISTICS);

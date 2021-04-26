@@ -1,8 +1,8 @@
 package fr.badcookie20.tga.cards.enchantment;
 
 import fr.badcookie20.tga.cards.Card.Rarity;
-import fr.badcookie20.tga.cards.CardList;
 import fr.badcookie20.tga.cards.EnchantmentCard;
+import fr.badcookie20.tga.cards.Entity;
 import fr.badcookie20.tga.effect.Effect;
 import fr.badcookie20.tga.effect.Statement;
 import fr.badcookie20.tga.effect.Statement.StatementList;
@@ -10,7 +10,7 @@ import fr.badcookie20.tga.effect.Statement.StatementList;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum EnchantmentList implements CardList<EnchantmentCard> {
+public enum Enchantment implements Entity<EnchantmentCard> {
 
 	PRECIOUS_LIFE1000(1000,
 			"Vie précieuse",
@@ -42,7 +42,7 @@ public enum EnchantmentList implements CardList<EnchantmentCard> {
 	private int manaCost;
 	private Effect[] effects;
 
-	EnchantmentList(int id, String name, Rarity rarity, int manaCost, Effect... effects) {
+	Enchantment(int id, String name, Rarity rarity, int manaCost, Effect... effects) {
 		this.id = id;
 		this.name = name;
 		this.rarity = rarity;
@@ -51,18 +51,29 @@ public enum EnchantmentList implements CardList<EnchantmentCard> {
 	}
 
 	@Override
-	public EnchantmentCard getCard() {
-		return new EnchantmentCard(id, name, rarity, manaCost, effects);
+	public EnchantmentCard generateNewCard() {
+		return new EnchantmentCard(this, id, name, rarity, manaCost, effects);
 	}
 
-	public static List<EnchantmentCard> getCards() {
+	public static List<EnchantmentCard> generateAllNewCards() {
 		List<EnchantmentCard> cards = new ArrayList<>();
 
-		for(EnchantmentList c : values()) {
-			cards.add(c.getCard());
+		for(Enchantment c : values()) {
+			cards.add(c.generateNewCard());
 		}
 
 		return cards;
 	}
-	
+
+	@Override
+	public int getID() {
+		return this.id;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+
 }

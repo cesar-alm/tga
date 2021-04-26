@@ -2,6 +2,7 @@ package fr.badcookie20.tga.utils;
 
 import fr.badcookie20.tga.Plugin;
 import fr.badcookie20.tga.cards.Card;
+import fr.badcookie20.tga.cards.Entity;
 import fr.badcookie20.tga.cards.creatures.CreatureType;
 import fr.badcookie20.tga.cards.mana.ManaType;
 import fr.badcookie20.tga.inventories.manager.InventoriesManager;
@@ -117,12 +118,12 @@ public class ConfigUtils {
      * @param p the player
      * @return the player's card list
      */
-    public static List<Card> getCards(TGAPlayer p) {
+    public static List<Entity<? extends Card>> getCards(TGAPlayer p) {
         String cards = getCardsString(p);
 
         if(cards == null || cards.isEmpty()) return new ArrayList<>();
 
-        List<Card> cardList = new ArrayList<>();
+        List<Entity<? extends Card>> entityList = new ArrayList<>();
 
         String[] s1 = cards.split("#");
 
@@ -132,19 +133,19 @@ public class ConfigUtils {
             int id = Integer.parseInt(s2[0]);
             int amount = Integer.parseInt(s2[1]);
 
-            Card c = CardUtils.getCard(id);
-            if(c == null) {
+            Entity<? extends Card> entity = Entity.getEntity(id);
+            if(entity == null) {
                 Logger.logError("Unknown card with id " + id);
                 p.getBukkitPlayer().sendMessage(ChatColor.RED + "Error while loading your card list! (reason: unknown card with id " + id + ")");
                 continue;
             }
 
             for(int i = amount; i>0; i--) {
-                cardList.add(c);
+                entityList.add(entity);
             }
         }
 
-        return cardList;
+        return entityList;
     }
 
     /**
@@ -231,7 +232,7 @@ public class ConfigUtils {
         Plugin.getInstance().saveConfig();
     }
 
-    public static List<Card> getForbiddenCards() {
+    public static List<Entity<? extends Card>> getForbiddenEntities() {
         Plugin.getInstance().reloadConfig();
 
         FileConfiguration config = Plugin.getInstance().getConfig();
@@ -243,10 +244,10 @@ public class ConfigUtils {
 
         if(cardsString.isEmpty() || !cardsString.contains("#")) return new ArrayList<>();
 
-        List<Card> cards = new ArrayList<>();
+        List<Entity<? extends Card>> cards = new ArrayList<>();
         for(String s : cardsString.split("#")) {
             int id = Integer.parseInt(s);
-            cards.add(CardUtils.getCard(id));
+            cards.add(Entity.getEntity(id));
         }
 
         return cards;

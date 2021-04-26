@@ -1,15 +1,12 @@
 package fr.badcookie20.tga.player;
 
 import fr.badcookie20.tga.Plugin;
-import fr.badcookie20.tga.cards.Card;
-import fr.badcookie20.tga.cards.CastCard;
-import fr.badcookie20.tga.cards.EffectCard;
-import fr.badcookie20.tga.cards.EnchantmentCard;
+import fr.badcookie20.tga.cards.*;
+import fr.badcookie20.tga.cards.creatures.Creature;
 import fr.badcookie20.tga.cards.creatures.CreatureCard;
-import fr.badcookie20.tga.cards.creatures.CreaturesList;
+import fr.badcookie20.tga.cards.mana.Mana;
 import fr.badcookie20.tga.cards.mana.ManaCard;
-import fr.badcookie20.tga.cards.mana.ManaList;
-import fr.badcookie20.tga.cards.sorcery.SorceriesList;
+import fr.badcookie20.tga.cards.sorcery.Sorcery;
 import fr.badcookie20.tga.cards.sorcery.SorceryCard;
 import fr.badcookie20.tga.effect.Effect;
 import fr.badcookie20.tga.effect.EffectHook;
@@ -17,7 +14,6 @@ import fr.badcookie20.tga.exceptions.EffectException;
 import fr.badcookie20.tga.inventories.manager.InventoriesManager;
 import fr.badcookie20.tga.inventories.manager.InventoryType;
 import fr.badcookie20.tga.utils.BukkitUtils;
-import fr.badcookie20.tga.utils.CardUtils;
 import fr.badcookie20.tga.utils.Prefixes;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -126,7 +122,7 @@ public class BattleField {
 	
 	public List<Card> getCards(Location loc) {
 		switch(loc) {
-		case BANNED:
+		case BANNED_CARDS:
 			return banned;
 		case BATTLEFIELD:
 			return onBattleField;
@@ -141,39 +137,95 @@ public class BattleField {
 		}
 	}
 
+	public boolean hasCard(Location loc, Card c) {
+        return getCards(loc).contains(c);
+    }
+
+    public boolean hasEntity(Location loc, Entity<? extends Card> entity) {
+        List<Card> cardsInLoc = getCards(loc);
+        for(Card card : cardsInLoc) {
+            if (card.getEntity().equals(entity)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Card getCardByEntity(Location loc, Entity<? extends Card> entity) {
+        List<Card> cardsInLoc = getCards(loc);
+        for(Card card : cardsInLoc) {
+            if (card.getEntity().equals(entity)) {
+                return card;
+            }
+        }
+
+        return null;
+    }
+
     public Status getStatus() {
         return status;
     }
-	
-	public void removeCard(Location loc, Card card) {
-		this.getCards(loc).remove(card);
-        loc.update(owner);
 
-        if(loc == Location.HAND) {
-            updateHand();
+    /**
+     * Sends a card from a location to another
+     * @param from the previous location
+     * @param to the final location
+     * @param card the card
+     */
+    public void send(Location from, Location to, Card card) {
+        this.removeCard(from, card);
+        this.addCard(to, card);
+
+        Location.BATTLEFIELD.update(owner);
+        Location.BATTLEFIELD.update(enemy);
+
+        InventoriesManager.handleAsync(owner, InventoryType.BATTLEFIELD);
+
+        if (!selfBattle) {
+            InventoriesManager.handleAsync(enemy, InventoryType.BATTLEFIELD);
         }
+    }
+	
+	public void removeCard(Location from, Card card) {
+        if(from == Location.BATTLEFIELD && card instanceof EffectCard) {
+            try {
+                ((EffectCard) card).executeAllOpposites(this.owner);
+            }catch(EffectException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+		this.getCards(from).remove(card);
+        from.update(owner);
 	}
 
     /**
      * Adds card to the specified location on the battlefield (doesn't take care of deleting of the previous location !)
      * Adds/removes mana if necessary
-     * @param loc the location the card is going
+     * @param to the location the card is going
      * @param card the card
      */
-	public void addCard(Location loc, Card card) {
-        if(loc == Location.HAND) {
-            this.getCards(loc).add(card);
-            updateHand();
-            return;
+	public void addCard(Location to, Card card) {
+        if(to == Location.BATTLEFIELD && card instanceof EffectCard) {
+            try {
+                ((EffectCard) card).executeAllEffects(this.owner, Effect.ExecutionTime.ON_INVOKE);
+                ((EffectCard) card).executeAllEffects(this.owner, Effect.ExecutionTime.DURING_CARDLIFE);
+            } catch (EffectException e) {
+                e.printStackTrace();
+            }
         }
 
-        if(loc == Location.BATTLEFIELD) {
+        if(to == Location.HAND) {
+            this.getCards(to).add(card);
+        }
+
+        if(to == Location.BATTLEFIELD) {
             if(card instanceof ManaCard) {
                 ManaCard c = (ManaCard) card;
 
                 this.totalMana += c.getAmount();
 
-                Location.BATTLEFIELD.update(owner);
                 this.enemy.sendImpossible(ChatColor.YELLOW + this.owner.getBukkitPlayer().getName() + ChatColor.AQUA + " a ajouté " + ChatColor.GREEN + c.getAmount() + ChatColor.AQUA + " mana");
 
                 return;
@@ -186,29 +238,24 @@ public class BattleField {
 
             if(card instanceof CreatureCard) {
                 this.getCards(Location.BATTLEFIELD).add(card);
-                Location.BATTLEFIELD.update(owner);
             }
 
             if(card instanceof SorceryCard) {
                 this.getCards(Location.GRAVEYARD).add(card);
-                Location.GRAVEYARD.update(owner);
-                Location.BATTLEFIELD.update(owner);
             }
 
             if(card instanceof EnchantmentCard) {
                 this.getCards(Location.BATTLEFIELD).add(card);
-                Location.BATTLEFIELD.update(owner);
             }
         }
 
-        if(loc == Location.GRAVEYARD) {
-            this.getCards(loc).add(card);
+        if(to == Location.GRAVEYARD) {
+            this.getCards(to).add(card);
         }
 
-        loc.update(owner);
+        to.update(owner);
         Location.BATTLEFIELD.update(owner);
-        InventoriesManager.getInstance().update(this.owner, InventoryType.BATTLEFIELD);
-        InventoriesManager.getInstance().update(this.owner, InventoryType.GRAVEYARD);
+        Location.GRAVEYARD.update(owner);
     }
 
     /**
@@ -222,7 +269,7 @@ public class BattleField {
         }
 
         for(int i = 1; i<=this.inHand.size(); i++) {
-            inv.setItem(i, this.inHand.get(i - 1).get());
+            inv.setItem(i, this.inHand.get(i - 1).createItemStack());
         }
     }
 
@@ -260,25 +307,25 @@ public class BattleField {
 		this.onBattleField = finalCards;
 	}
 
-    public void initDeck(List<Card> allCards) {
-        List<Card> finalCards = new ArrayList<>();
+    public void initDeck(List<Entity<? extends Card>> allCards) {
+        List<Entity<? extends Card>> finalCards = new ArrayList<>();
 
-        for(Card c : allCards) {
-            if(c instanceof ManaCard) {
-                if(Collections.frequency(finalCards, c) <= MAX_SAME_CARD_MANA) {
-                    finalCards.add(c);
+        for(Entity<? extends Card> entity : allCards) {
+            if(entity instanceof Mana) {
+                if(Collections.frequency(finalCards, entity) <= MAX_SAME_CARD_MANA) {
+                    finalCards.add(entity);
                 }
             }else{
-                if(Collections.frequency(finalCards, c) <= MAX_SAME_CARD) {
-                    finalCards.add(c);
+                if(Collections.frequency(finalCards, entity) <= MAX_SAME_CARD) {
+                    finalCards.add(entity);
                 }
             }
         }
 
-        this.leftInDeck = finalCards;
+        this.leftInDeck = Entity.generateAllNewCards(finalCards);
 
         // for(int i = MAX_DRAWING; i > 0; i--) {
-            drawCard();
+        drawCard();
         // }
     }
 	
@@ -287,55 +334,17 @@ public class BattleField {
 			this.updateCard(card);
 		}
 	}
-
-    /**
-     * Sends a card from a location to another
-     * @param from the previous location
-     * @param to the final location
-     * @param card the card
-     * @param sending the player
-     */
-	public void send(Location from, Location to, Card card, TGAPlayer sending) {
-		if(from == Location.BATTLEFIELD && card instanceof EffectCard) {
-            try {
-                CardUtils.executeOpposite((EffectCard) card, sending);
-            }catch(EffectException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        if(to == Location.BATTLEFIELD && card instanceof EffectCard) {
-            try {
-                ((EffectCard) card).executeEffect(sending, Effect.ExecutionTime.ON_INVOKE);
-                ((EffectCard) card).executeEffect(sending, Effect.ExecutionTime.DURING_CARDLIFE);
-            } catch (EffectException e) {
-                e.printStackTrace();
-            }
-        }
-
-		this.removeCard(from, card);
-		this.addCard(to, card);
-
-        InventoriesManager.getInstance().update(owner, InventoryType.BATTLEFIELD);
-        InventoriesManager.getInstance().update(enemy, InventoryType.BATTLEFIELD);
-
-        InventoriesManager.handleAsync(owner, InventoryType.BATTLEFIELD);
-
-        if (!selfBattle) {
-            InventoriesManager.handleAsync(enemy, InventoryType.BATTLEFIELD);
-        }
-	}
 	
 	public void drawCard() {
         // TODO: 11/09/2016
         // this.addCard(Location.HAND, this.leftInDeck.remove(0));
 
-        this.addCard(Location.HAND, CreaturesList.IMMORTAL_0.getCard());
-        this.addCard(Location.HAND, CreaturesList.IMMORTAL_1.getCard());
-        this.addCard(Location.HAND, SorceriesList.DAMAGE.getCard());
-        this.addCard(Location.HAND, CreaturesList.SAMPLE.getCard());
-        this.addCard(Location.HAND, ManaList.MANA_5.getCard());
-        this.addCard(Location.HAND, ManaList.MANA_5.getCard());
+        this.addCard(Location.HAND, Creature.IMMORTAL_0.generateNewCard());
+        this.addCard(Location.HAND, Creature.IMMORTAL_1.generateNewCard());
+        this.addCard(Location.HAND, Sorcery.DAMAGE.generateNewCard());
+        this.addCard(Location.HAND, Creature.SAMPLE.generateNewCard());
+        this.addCard(Location.HAND, Mana.MANA_5.generateNewCard());
+        this.addCard(Location.HAND, Mana.MANA_5.generateNewCard());
 	}
 
     public EffectHook getEffectHook() {
@@ -433,7 +442,7 @@ public class BattleField {
 
         this.owner.updateStatus();
         this.owner.updateTurnNumber();
-        InventoriesManager.getInstance().update(owner, InventoryType.BATTLEFIELD);
+        Location.BATTLEFIELD.update(owner);
 
         if(open) {
             this.owner.getBukkitPlayer().closeInventory();
@@ -530,11 +539,15 @@ public class BattleField {
         return inHand;
     }
 
+    public boolean isSelfBattle() {
+        return selfBattle;
+    }
+
     public enum Location {
 		GRAVEYARD(InventoryType.GRAVEYARD),
 		HAND(null),
 		BATTLEFIELD(InventoryType.BATTLEFIELD),
-		BANNED(InventoryType.BANNED_CARDS),
+		BANNED_CARDS(InventoryType.BANNED_CARDS),
 		DECK(null);
 
         private InventoryType type;
@@ -544,7 +557,11 @@ public class BattleField {
         }
 
         public void update(TGAPlayer p) {
-            if(type != null) {
+            if(type == null) {
+                // hand
+                p.getBattleField().updateHand();
+            }else{
+                // not hand
                 InventoriesManager.getInstance().update(p, type);
             }
         }

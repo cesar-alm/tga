@@ -92,6 +92,7 @@ import java.util.List;
         }
 
         public static Inventory createInventory(List<? extends Card> cards, int initialSize, String name) {
+            // TODO WHY ?
             int size = initialSize;
             List<Card> alreadyCalled = new ArrayList<>();
 

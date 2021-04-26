@@ -1,6 +1,7 @@
 package fr.badcookie20.tga.inventories.admin;
 
 import fr.badcookie20.tga.cards.Card;
+import fr.badcookie20.tga.cards.Entity;
 import fr.badcookie20.tga.inventories.manager.InventoriesManager;
 import fr.badcookie20.tga.inventories.manager.InventoryType;
 import fr.badcookie20.tga.inventories.manager.SaveableInventory;
@@ -22,28 +23,29 @@ public class ForbiddenInventory extends SaveableInventory {
 
     @Override
     public Inventory get(TGAPlayer p) {
-        List<? extends Card> cards = CardUtils.sortInverted(Card.Type.MANA, CardUtils.getAllCards());
-        List<? extends Card> forbiddenCards = ConfigUtils.getForbiddenCards();
+        List<Entity<? extends Card>> forbiddenEntities = ConfigUtils.getForbiddenEntities();
 
-        Inventory inv = BukkitUtils.createInventory(cards, 2, ChatColor.BLACK + "Cartes interdites");
+        Inventory inv = BukkitUtils.createInventory(Entity.allEntities.size(), ChatColor.BLACK + "Cartes interdites");
 
-        for(Card c : cards) {
-            ItemStack item = c.get();
+        for(Entity<? extends Card> entity : Entity.allEntities) {
+            Card card = entity.generateNewCard();
+            ItemStack item = card.createItemStack();
+
             ItemMeta itemMeta = item.getItemMeta();
             String name = itemMeta.getDisplayName();
             List<String> lore = itemMeta.getLore();
 
             lore.add("");
 
-            if(forbiddenCards.contains(c)) {
+            if(forbiddenEntities.contains(entity)) {
                 itemMeta.setDisplayName(name + FORBIDDEN);
                 lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "->Autoriser");
-                itemMeta.setLore(lore);
             }else{
                 itemMeta.setDisplayName(name + ALLOWED);
                 lore.add(ChatColor.RED + "" + ChatColor.ITALIC + "->Interdire");
-                itemMeta.setLore(lore);
             }
+
+            itemMeta.setLore(lore);
 
             item.setItemMeta(itemMeta);
             inv.addItem(item);
@@ -73,14 +75,15 @@ public class ForbiddenInventory extends SaveableInventory {
             return;
         }
 
-        Card c = CardUtils.getCard(clicked);
+        // Card c = CardUtils.getCard(clicked);
+        Card c = ItemUIDUtils.getCardByItem(clicked);
 
         if(c == null) {
             Logger.logError("card is null!");
             return;
         }
 
-        if(ConfigUtils.getForbiddenCards().contains(c)) {
+        if(ConfigUtils.getForbiddenEntities().contains(c)) {
             ConfigUtils.removeForbiddenCard(c);
         }else{
             ConfigUtils.addForbiddenCard(c);

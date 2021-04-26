@@ -1,7 +1,8 @@
 package fr.badcookie20.tga.inventories.management;
 
 import fr.badcookie20.tga.cards.Card;
-import fr.badcookie20.tga.cards.mana.ManaCard;
+import fr.badcookie20.tga.cards.Entity;
+import fr.badcookie20.tga.cards.mana.Mana;
 import fr.badcookie20.tga.inventories.admin.ForbiddenInventory;
 import fr.badcookie20.tga.inventories.manager.InventoriesManager;
 import fr.badcookie20.tga.inventories.manager.InventoryType;
@@ -24,19 +25,19 @@ public class CardListInventory extends SaveableInventory {
             return this.getSavedInventory(p);
         }
 
-        Inventory inventory = BukkitUtils.createInventory(p.getCardsList(false), 2, "Liste de Cartes");
+        Inventory inventory = BukkitUtils.createInventory(p.getCardsList(false).size(), "Liste de Cartes");
 
         int manaCards = 0;
 
-        for(Card c : p.getCardsList(false)) {
-            if(c instanceof ManaCard) {
+        for(Entity<? extends Card> entity : p.getCardsList(false)) {
+            if(entity instanceof Mana) {
                 manaCards++;
                 continue;
             }
 
-            ItemStack item = c.get();
+            ItemStack item = entity.generateNewCard().createItemStack();
 
-            if(ConfigUtils.getForbiddenCards().contains(c)) {
+            if(ConfigUtils.getForbiddenEntities().contains(entity)) {
                 ItemMeta itemMeta = item.getItemMeta();
 
                 itemMeta.setDisplayName(itemMeta.getDisplayName() + ForbiddenInventory.FORBIDDEN);

@@ -2,16 +2,17 @@ package fr.badcookie20.tga.effect;
 
 import fr.badcookie20.tga.cards.Card;
 import fr.badcookie20.tga.cards.CastCard;
+import fr.badcookie20.tga.cards.Entity;
+import fr.badcookie20.tga.cards.FooCard;
 import fr.badcookie20.tga.cards.creatures.CreatureCard;
 import fr.badcookie20.tga.cards.creatures.CreatureType;
 import fr.badcookie20.tga.exceptions.EffectException;
 import fr.badcookie20.tga.player.BattleField;
 import fr.badcookie20.tga.player.TGAPlayer;
-import fr.badcookie20.tga.utils.CardUtils;
+import fr.badcookie20.tga.utils.CardUtils2;
 import fr.badcookie20.tga.utils.Logger;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Statement {
@@ -24,12 +25,12 @@ public class Statement {
 		this.args = args;
 	}
 
-	public boolean execute(TGAPlayer p) throws EffectException {
-        return this.statement.execute(p, this.args);
+	public boolean execute(TGAPlayer p, Card source) throws EffectException {
+        return this.statement.execute(p, source, this.args);
     }
 
 	/**
-	 * Changes the attack and/or the defense of all the creatures in the battlefield of the specified player
+	 * Changes the attack and/or the defense of all the creatures in the battlefield
 	 * @param atk the amount of attack changed
 	 * @param def the amount of defense changed
 	 * @param creatureType if specified, only the creatures of the specified type will be modified
@@ -37,27 +38,28 @@ public class Statement {
 	 * @param player the player launching the effect
 	 */
 	public static boolean changeAttackDefValues(int atk, int def, CreatureType creatureType, int who, TGAPlayer player) {
-		try {
-            BattleField battleField = player.getBattleField();
+        BattleField battleField = player.getBattleField();
 
+        if(battleField.isSelfBattle()) {
+            who = 1;
+        }
+
+		try {
 		    if(who == 2) {
 		        // let's be smart
 		        return changeAttackDefValues(atk, def, creatureType, 1, battleField.getEnemy());
             }
 
-		    List<CreatureCard> creatures = CardUtils.toCreatureCardList(battleField.getAllCardsInBattleField());
-		    List<CreatureCard> toUpdate = new ArrayList<>();
+		    List<CreatureCard> creatures = CardUtils2.toCreatureCardList(battleField.getAllCardsInBattleField());
 
 		    for (CreatureCard creature : creatures) {
-		        if (creature.getCreatureType() != creatureType) return false;
+		        if (creature.getCreatureType() != creatureType) continue;
 		        creature.increaseAtk(atk);
 		        creature.increaseDef(def);
- 		        toUpdate.add(creature);
 		    }
 
-		    for (CreatureCard creature : toUpdate) {
-		        battleField.updateCard(creature);
-		    }
+            BattleField.Location.BATTLEFIELD.update(player);
+            BattleField.Location.BATTLEFIELD.update(battleField.getEnemy());
 
 		    if(who == 0) {
 		        // We also do it for the enemy
@@ -90,11 +92,13 @@ public class Statement {
         return true;
     }
 
-    public static boolean invoke(boolean payCosts, Card c, BattleField.Location initialLocation, int id, boolean sacrify, TGAPlayer p) {
-        if(!p.getBattleField().getCards(initialLocation).contains(c)) {
-            p.sendImpossible("Vous ne possédez pas la carte dans votre main !");
+    public static boolean invoke(boolean payCosts, Entity<? extends Card> entityToBeInvoked, BattleField.Location entityToBeInvokedLocation, Card cardExecutingEffect, boolean sacrify, TGAPlayer p) {
+        if(!p.getBattleField().hasEntity(entityToBeInvokedLocation, entityToBeInvoked)) {
+            p.sendImpossible("Vous ne possédez pas la carte à l'endroit nécessaire !");
             return false;
         }
+
+        Card c = p.getBattleField().getCardByEntity(entityToBeInvokedLocation, entityToBeInvoked);
 
         if(payCosts) {
             if(c instanceof CastCard) {
@@ -105,11 +109,12 @@ public class Statement {
             }
         }
 
-        if(id != -1 && sacrify) {
-            ((CreatureCard) CardUtils.getCard(id)).die(p.getBattleField(), null);
+        if(cardExecutingEffect != null && sacrify) {
+            // TODO allow other carts to invoke this way
+            ((CreatureCard) cardExecutingEffect).die(p.getBattleField());
         }
 
-        p.getBattleField().send(initialLocation, BattleField.Location.BATTLEFIELD, c, p);
+        p.getBattleField().send(entityToBeInvokedLocation, BattleField.Location.BATTLEFIELD, c);
 
         return true;
     }
@@ -142,7 +147,7 @@ public class Statement {
 			if(method == null) Logger.logError("Couldn't find method for " + methodName + "!");
 		}
 		
-		public boolean execute(TGAPlayer executing, Object... args) throws EffectException {
+		public boolean execute(TGAPlayer executing, Card source, Object... args) throws EffectException {
             try {
                 if(args.length == 0) {
                     this.method.invoke(null, executing);
@@ -153,7 +158,11 @@ public class Statement {
 
                 int i = 0;
                 for(Object arg : args) {
-                    finalArgs[i] = arg;
+                    if(arg instanceof FooCard) {
+                        finalArgs[i] = source;
+                    }else {
+                        finalArgs[i] = arg;
+                    }
                     i++;
                 }
 

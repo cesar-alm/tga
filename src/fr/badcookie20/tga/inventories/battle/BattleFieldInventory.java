@@ -103,13 +103,13 @@ public class BattleFieldInventory extends SaveableInventory {
 
         int i = OWN_CARDS_START_SLOT;
         for(Card c : p.getBattleField().getCards(BattleField.Location.BATTLEFIELD)) {
-            inv.setItem(i, c.get());
+            inv.setItem(i, c.createItemStack());
             i++;
         }
 
         int j = ENEMY_CARDS_SLOT;
         for(Card c : p.getBattleField().getEnemy().getBattleField().getCards(BattleField.Location.BATTLEFIELD)) {
-            inv.setItem(j, c.get());
+            inv.setItem(j, c.createItemStack());
             j++;
         }
 
@@ -182,7 +182,7 @@ public class BattleFieldInventory extends SaveableInventory {
 
         int slot = NextUtils.getLastClickedRawSlotOf(p.getBukkitPlayer());
         // TODO We need to get the actual card!
-        Card c = CardUtils.getCard(clicked);
+        Card c = ItemUIDUtils.getCardByItem(clicked);
 
         if(c == null) {
             Logger.logError("card is null!");
@@ -215,7 +215,7 @@ public class BattleFieldInventory extends SaveableInventory {
             }
 
             // We do not take care of removing mana or anything
-            p.getBattleField().send(BattleField.Location.HAND, BattleField.Location.BATTLEFIELD, c, p);
+            p.getBattleField().send(BattleField.Location.HAND, BattleField.Location.BATTLEFIELD, c);
             return;
         }
 
@@ -231,15 +231,18 @@ public class BattleFieldInventory extends SaveableInventory {
                         CreatureCard card = (CreatureCard) c;
 
                         if (card.hasEffect(Effect.ExecutionTime.ABILITY)) {
-                            Effect e = card.getEffect(Effect.ExecutionTime.ABILITY);
-                            boolean doIt = p.confirmAction(e.getFullDescription());
+                            List<Effect> allAbilities = card.getAllEffects(Effect.ExecutionTime.ABILITY);
 
-                            if (doIt) {
-                                e.execute(p);
+                            for(Effect e : allAbilities) {
+                                boolean doIt = p.confirmAction(e.getFullDescription());
+
+                                if (doIt) {
+                                    e.execute(p, card);
+                                }
                             }
                         }
 
-                        InventoriesManager.getInstance().update(p, InventoryType.BATTLEFIELD);
+                        BattleField.Location.BATTLEFIELD.update(p);
                         InventoriesManager.getInstance().handle(p, InventoryType.BATTLEFIELD);
                         return;
                     }
@@ -322,7 +325,7 @@ public class BattleFieldInventory extends SaveableInventory {
     }
 
     private ItemStack initBannedLore(BattleField battleField) {
-        List<Card> banned = battleField.getCards(BattleField.Location.BANNED);
+        List<Card> banned = battleField.getCards(BattleField.Location.BANNED_CARDS);
         return initLore(banned, BANNED, false);
     }
 
@@ -354,7 +357,7 @@ public class BattleFieldInventory extends SaveableInventory {
     }
 
     private void handleBanned(TGAPlayer p) {
-        if(p.getBattleField().getCards(BattleField.Location.BANNED).isEmpty()) {
+        if(p.getBattleField().getCards(BattleField.Location.BANNED_CARDS).isEmpty()) {
             InventoriesManager.getInstance().handle(p, InventoryType.BATTLEFIELD);
         }else{
             InventoriesManager.getInstance().handle(p, InventoryType.BANNED_CARDS);

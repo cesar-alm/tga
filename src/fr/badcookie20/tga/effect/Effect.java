@@ -1,5 +1,6 @@
 package fr.badcookie20.tga.effect;
 
+import fr.badcookie20.tga.cards.Card;
 import fr.badcookie20.tga.exceptions.EffectException;
 import fr.badcookie20.tga.player.TGAPlayer;
 import fr.badcookie20.tga.utils.Prefixes;
@@ -11,6 +12,7 @@ public class Effect {
 	private String description;
 	private int extraCost;
 	private Statement statement;
+	// TODO check opposites
 	private Statement opposite;
 
 	/**
@@ -45,7 +47,7 @@ public class Effect {
 		return this.extraCost;
 	}
 	
-	public boolean execute(TGAPlayer p) throws EffectException {
+	public boolean execute(TGAPlayer p, Card source) throws EffectException {
         if(this.extraCost > 0) {
             if(p.getBattleField().getMana() < extraCost) {
                 p.sendImpossible("Vous n'avez pas assez de mana pour exécuter cet effet !");
@@ -53,7 +55,7 @@ public class Effect {
             }
         }
 
-        boolean did = this.statement.execute(p);
+        boolean did = this.statement.execute(p, source);
 
         if(did) {
             p.getBattleField().getEnemy().getBukkitPlayer().sendMessage(ChatColor.YELLOW + p.getBukkitPlayer().getName() + Prefixes.CARD_NAME + " a exécuté l'effet " + Prefixes.EFFECT_DESCRIPTION + this.description + Prefixes.CARD_NAME);
@@ -69,8 +71,8 @@ public class Effect {
         return this.opposite != null;
     }
 
-    public void executeOpposite(TGAPlayer p) throws EffectException {
-        this.opposite.execute(p);
+    public void executeOpposite(TGAPlayer p, Card source) throws EffectException {
+        this.opposite.execute(p, source);
     }
 
     public enum ExecutionTime {

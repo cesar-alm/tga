@@ -1,7 +1,8 @@
 package fr.badcookie20.tga.cards.creatures;
 
 import fr.badcookie20.tga.cards.Card;
-import fr.badcookie20.tga.cards.CardList;
+import fr.badcookie20.tga.cards.Entity;
+import fr.badcookie20.tga.cards.FooCard;
 import fr.badcookie20.tga.effect.Effect;
 import fr.badcookie20.tga.effect.Statement;
 import fr.badcookie20.tga.effect.Statement.StatementList;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public enum CreaturesList implements CardList<CreatureCard> {
+public enum Creature implements Entity<CreatureCard> {
 
     MESSENGER_0(2,
             "Nairuu, Messager des Dieux",
@@ -51,9 +52,9 @@ public enum CreaturesList implements CardList<CreatureCard> {
                     0,
                     new Statement(StatementList.CHANGE_ATK_DEF, 500, -200, CreatureType.ANGEL, 0),
                     new Statement(StatementList.CHANGE_ATK_DEF, 500, -200, CreatureType.ANGEL, 0)),
-            new Effect(Effect.ExecutionTime.ABILITY, "Invoquez " + Prefixes.CARD_NAME + IMMORTAL_1.getCard().getName() + Prefixes.EFFECT_DESCRIPTION + " depuis votre main sans payer de coût supplémentaires. Sacrifiez cette carte",
+            new Effect(Effect.ExecutionTime.ABILITY, "Invoquez " + Prefixes.CARD_NAME + IMMORTAL_1.getName() + Prefixes.EFFECT_DESCRIPTION + " depuis votre main sans payer de coût supplémentaires. Sacrifiez cette carte",
                     500,
-                    new Statement(StatementList.INVOKE, false, IMMORTAL_1.getCard(), BattleField.Location.HAND, 0, true),
+                    new Statement(StatementList.INVOKE, false, IMMORTAL_1, BattleField.Location.HAND, new FooCard(), true),
                     null)),
     SAMPLE(999,
             "sample",
@@ -79,7 +80,7 @@ public enum CreaturesList implements CardList<CreatureCard> {
     private final Effect[] effects;
 
 
-    CreaturesList(int id, String name, Card.Rarity rarity, int manaCost, CreatureType creatureType, int atk, int def, List<CreatureProperty> properties, Effect... effects) {
+    Creature(int id, String name, Card.Rarity rarity, int manaCost, CreatureType creatureType, int atk, int def, List<CreatureProperty> properties, Effect... effects) {
         this.id = id;
         this.name = name;
         this.rarity = rarity;
@@ -91,19 +92,27 @@ public enum CreaturesList implements CardList<CreatureCard> {
         this.effects = effects;
     }
 
-    public static List<CreatureCard> getCards() {
+    public static List<CreatureCard> generateAllNewCards() {
         List<CreatureCard> cards = new ArrayList<>();
 
-        for (CreaturesList c : values()) {
-            cards.add(c.getCard());
+        for (Creature c : values()) {
+            cards.add(c.generateNewCard());
         }
 
         return cards;
     }
 
     @Override
-    public CreatureCard getCard() {
-        return new CreatureCard(id, name, rarity, manaCost, creatureType, atk, def, properties, effects);
+    public int getID() {
+        return this.id;
     }
 
+    @Override
+    public CreatureCard generateNewCard() {
+        return new CreatureCard(this, id, name, rarity, manaCost, creatureType, atk, def, properties, effects);
+    }
+
+    public String getName() {
+        return name;
+    }
 }

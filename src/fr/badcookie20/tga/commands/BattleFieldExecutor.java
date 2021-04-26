@@ -2,6 +2,7 @@ package fr.badcookie20.tga.commands;
 
 import fr.badcookie20.tga.inventories.manager.InventoriesManager;
 import fr.badcookie20.tga.inventories.manager.InventoryType;
+import fr.badcookie20.tga.player.BattleField;
 import fr.badcookie20.tga.player.TGAPlayer;
 import fr.badcookie20.tga.utils.BukkitUtils;
 import org.bukkit.command.Command;
@@ -26,7 +27,7 @@ public class BattleFieldExecutor implements CommandExecutor {
             return false;
         }
 
-        InventoriesManager.getInstance().update(tgaPlayer, InventoryType.BATTLEFIELD);
+        BattleField.Location.BATTLEFIELD.update(tgaPlayer);
         InventoriesManager.handleAsync(tgaPlayer, InventoryType.BATTLEFIELD);
 
         return true;
