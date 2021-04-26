@@ -1,52 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/src/fr" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/Plugin.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/Card.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/CastCard.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/EffectCard.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/EnchantmentCard.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/creatures" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/creatures/CreatureCard.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/creatures/CreatureProperty.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/creatures/CreatureType.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/creatures/CreaturesList.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/enchantment" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/enchantment/EnchantmentList.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/mana" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/mana/ManaAmount.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/mana/ManaCard.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/mana/ManaNode.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/mana/ManaType.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/effect" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/effect/Effect.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/effect/EffectHook.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/effect/Statement.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/exceptions" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/exceptions/EffectException.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/inventories" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/inventories/management/CardListInventory.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/inventories/manager/SaveableInventory.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/inventories/manager/TGAInventory.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/inventories/manager/UniversalInventory.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/listeners" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/listeners/InventoryListener.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/listeners/JoinListener.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/player/BattleField.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/player/TGAPlayer.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/utils" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/utils/BukkitUtils.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/utils/CardUtils.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/utils/IndividualScoreboard.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/utils/Logger.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/utils/NextUtils.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/utils/Prefixes.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/utils/ReflectionUtils.java" charset="UTF-16" />
-    <file url="file://$PROJECT_DIR$/src/plugin.yml" charset="UTF-16" />
-    <file url="PROJECT" charset="UTF-16" />
+    <file url="file://$PROJECT_DIR$/src" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/creatures/CreatureCard.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/fr/badcookie20/tga/cards/creatures/CreatureType.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/plugin.yml" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>
