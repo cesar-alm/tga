@@ -35,9 +35,11 @@ public class Statement {
 	 * @param def the amount of defense changed
 	 * @param creatureType if specified, only the creatures of the specified type will be modified
      * @param who 0 to change everyone's cards; 1 to change the player's cards; 2 to change the enemy's cards
+     * @param cardExecutingEffect the card that launches this effect (or null if not applicable)
+     * @param includeCard if <code>false</code> and cardExecutingEffect is specified, will not apply these changes to this card.
 	 * @param player the player launching the effect
 	 */
-	public static boolean changeAttackDefValues(int atk, int def, CreatureType creatureType, int who, TGAPlayer player) {
+	public static boolean changeAttackDefValues(int atk, int def, CreatureType creatureType, int who, Card cardExecutingEffect, boolean includeCard, TGAPlayer player) {
         BattleField battleField = player.getBattleField();
 
         if(battleField.isSelfBattle()) {
@@ -47,23 +49,22 @@ public class Statement {
 		try {
 		    if(who == 2) {
 		        // let's be smart
-		        return changeAttackDefValues(atk, def, creatureType, 1, battleField.getEnemy());
+		        return changeAttackDefValues(atk, def, creatureType, 1, null, true, battleField.getEnemy());
             }
 
 		    List<CreatureCard> creatures = CardUtils2.toCreatureCardList(battleField.getAllCardsInBattleField());
 
 		    for (CreatureCard creature : creatures) {
-		        if (creature.getCreatureType() != creatureType) continue;
-		        creature.increaseAtk(atk);
-		        creature.increaseDef(def);
+		        if(creature.getCreatureType() != creatureType) continue;
+		        if(!includeCard && cardExecutingEffect != creature) {
+                    creature.increaseAtk(atk);
+                    creature.increaseDef(def);
+                }
 		    }
-
-            BattleField.Location.BATTLEFIELD.update(player);
-            BattleField.Location.BATTLEFIELD.update(battleField.getEnemy());
 
 		    if(who == 0) {
 		        // We also do it for the enemy
-		        return changeAttackDefValues(atk, def, creatureType, 1, battleField.getEnemy());
+		        return changeAttackDefValues(atk, def, creatureType, 1, null, true, battleField.getEnemy());
             }
         }catch(Exception ex) {
             ex.printStackTrace();
@@ -109,12 +110,20 @@ public class Statement {
             }
         }
 
-        if(cardExecutingEffect != null && sacrify) {
-            // TODO allow other carts to invoke this way
-            ((CreatureCard) cardExecutingEffect).die(p.getBattleField());
+        if(sacrify) {
+            if(cardExecutingEffect == null) {
+                throw new NullPointerException("Cannot sacrifice a card if it is not specified");
+            }else{
+                if(cardExecutingEffect instanceof CreatureCard) {
+                    // May have special behaviour
+                    ((CreatureCard) cardExecutingEffect).die(p.getBattleField(), false);
+                }else{
+                    p.getBattleField().send(BattleField.Location.BATTLEFIELD, BattleField.Location.GRAVEYARD, cardExecutingEffect, false);
+                }
+            }
         }
 
-        p.getBattleField().send(entityToBeInvokedLocation, BattleField.Location.BATTLEFIELD, c);
+        p.getBattleField().send(entityToBeInvokedLocation, BattleField.Location.BATTLEFIELD, c, false);
 
         return true;
     }

@@ -28,10 +28,10 @@ public class Plugin extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        Bukkit.getScheduler().cancelTasks(this);
-
         BukkitUtils.enableAsyncCatcher();
         TGAPlayer.disconnectAllPlayers();
+
+        Bukkit.getScheduler().cancelTasks(this);
     }
 
     /**

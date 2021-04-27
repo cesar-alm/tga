@@ -27,7 +27,7 @@ public abstract class EffectCard extends CastCard {
      */
 	public void executeAllEffects(TGAPlayer p) throws EffectException {
         for(Effect e : getEffects()) {
-            e.execute(p, this);
+            e.executeAll(p, this);
         }
     }
 
@@ -41,7 +41,7 @@ public abstract class EffectCard extends CastCard {
     public void executeAllEffects(TGAPlayer p, Effect.ExecutionTime time) throws EffectException {
         for(Effect e : getEffects()) {
             if(e.getExecutionTime() == time) {
-                e.execute(p, this);
+                e.executeAll(p, this);
             }
         }
     }
@@ -83,7 +83,7 @@ public abstract class EffectCard extends CastCard {
 
     public void executeAllOpposites(TGAPlayer p) throws EffectException {
         for(Effect e : effects) {
-            if(e.hasOpposite()) e.executeOpposite(p, this);
+            if(e.hasOpposites()) e.executeAllOpposites(p, this);
         }
     }
 

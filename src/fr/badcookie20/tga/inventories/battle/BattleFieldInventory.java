@@ -215,7 +215,7 @@ public class BattleFieldInventory extends SaveableInventory {
             }
 
             // We do not take care of removing mana or anything
-            p.getBattleField().send(BattleField.Location.HAND, BattleField.Location.BATTLEFIELD, c);
+            p.getBattleField().send(BattleField.Location.HAND, BattleField.Location.BATTLEFIELD, c, true);
             return;
         }
 
@@ -237,7 +237,7 @@ public class BattleFieldInventory extends SaveableInventory {
                                 boolean doIt = p.confirmAction(e.getFullDescription());
 
                                 if (doIt) {
-                                    e.execute(p, card);
+                                    e.executeAll(p, card);
                                 }
                             }
                         }

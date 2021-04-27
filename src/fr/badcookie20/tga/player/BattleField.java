@@ -173,12 +173,16 @@ public class BattleField {
      * @param to the final location
      * @param card the card
      */
-    public void send(Location from, Location to, Card card) {
+    public void send(Location from, Location to, Card card, boolean reopenInventories) {
         this.removeCard(from, card);
         this.addCard(to, card);
 
         Location.BATTLEFIELD.update(owner);
         Location.BATTLEFIELD.update(enemy);
+
+        if(!reopenInventories) {
+            return;
+        }
 
         InventoriesManager.handleAsync(owner, InventoryType.BATTLEFIELD);
 

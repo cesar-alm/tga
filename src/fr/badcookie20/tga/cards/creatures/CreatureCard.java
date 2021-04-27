@@ -69,12 +69,12 @@ public class CreatureCard extends EffectCard {
 		tempDef = def;
 	}
 	
-	public void die(BattleField b) {
+	public void die(BattleField b, boolean reopenInventories) {
 		resetDef();
 		if(this.hasProperty(CreatureProperty.BACK_TO_HAND_2) || this.hasProperty(CreatureProperty.BACK_TO_HAND_3)) {
-			b.send(Location.BATTLEFIELD, Location.HAND, this);
+			b.send(Location.BATTLEFIELD, Location.HAND, this, reopenInventories);
 		}else{
-			b.send(Location.BATTLEFIELD, Location.GRAVEYARD, this);
+			b.send(Location.BATTLEFIELD, Location.GRAVEYARD, this, reopenInventories);
 		}
 	}
 
@@ -128,7 +128,7 @@ public class CreatureCard extends EffectCard {
             attackingP.sendImpossible(ChatColor.GREEN + "Votre carte a tué la créature adverse !");
 
             // target dead
-            target.die(targetP.getBattleField());
+            target.die(targetP.getBattleField(), false);
 
             if (attacking.hasProperty(CreatureProperty.OVERPOWERED)) {
                 targetP.getBattleField().damage(attacking.atk - target.tempDef, attackingP);
@@ -144,6 +144,8 @@ public class CreatureCard extends EffectCard {
 		Location.BATTLEFIELD.update(targetP);
 		Location.GRAVEYARD.update(attackingP);
 		Location.GRAVEYARD.update(targetP);
+
+		// TODO reopen inventories ?
     }
 }
 
