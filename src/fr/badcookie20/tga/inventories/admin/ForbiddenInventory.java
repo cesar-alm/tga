@@ -83,7 +83,7 @@ public class ForbiddenInventory extends SaveableInventory {
             return;
         }
 
-        if(ConfigUtils.getForbiddenEntities().contains(c)) {
+        if(ConfigUtils.getForbiddenEntities().contains(c.getEntity())) {
             ConfigUtils.removeForbiddenCard(c);
         }else{
             ConfigUtils.addForbiddenCard(c);

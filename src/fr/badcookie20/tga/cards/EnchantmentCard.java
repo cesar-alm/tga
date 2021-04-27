@@ -1,7 +1,7 @@
 package fr.badcookie20.tga.cards;
 
 import fr.badcookie20.tga.effect.Effect;
-import fr.badcookie20.tga.utils.CardUtils2;
+import fr.badcookie20.tga.utils.CardUtils;
 import org.bukkit.inventory.ItemStack;
 
 public class EnchantmentCard extends EffectCard {
@@ -12,7 +12,7 @@ public class EnchantmentCard extends EffectCard {
 
 	@Override
 	public ItemStack createItemStack() {
-		return CardUtils2.createItemStack(name, Type.ENCHANTMENT, manaCost, null, effects, -1, -1, null, false, this.uid);
+		return CardUtils.createItemStack(name, Type.ENCHANTMENT, manaCost, null, effects, -1, -1, null, false, this.uid);
 	}
 
 }

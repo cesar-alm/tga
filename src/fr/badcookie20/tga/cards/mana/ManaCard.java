@@ -2,7 +2,7 @@ package fr.badcookie20.tga.cards.mana;
 
 import fr.badcookie20.tga.cards.Card;
 import fr.badcookie20.tga.cards.Entity;
-import fr.badcookie20.tga.utils.CardUtils2;
+import fr.badcookie20.tga.utils.CardUtils;
 import org.bukkit.inventory.ItemStack;
 
 public class ManaCard extends Card {
@@ -23,7 +23,7 @@ public class ManaCard extends Card {
 
 	@Override
 	public ItemStack createItemStack() {
-		return CardUtils2.createItemStack("Mana", Card.Type.MANA, this.amount, null, null, -1, -1, null, false, this.uid);
+		return CardUtils.createItemStack("Mana", Card.Type.MANA, this.amount, null, null, -1, -1, null, false, this.uid);
 	}
 
 	public void resetAmount() {

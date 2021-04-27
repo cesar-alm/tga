@@ -9,7 +9,7 @@ import fr.badcookie20.tga.cards.creatures.CreatureType;
 import fr.badcookie20.tga.exceptions.EffectException;
 import fr.badcookie20.tga.player.BattleField;
 import fr.badcookie20.tga.player.TGAPlayer;
-import fr.badcookie20.tga.utils.CardUtils2;
+import fr.badcookie20.tga.utils.CardUtils;
 import fr.badcookie20.tga.utils.Logger;
 
 import java.lang.reflect.Method;
@@ -52,7 +52,7 @@ public class Statement {
 		        return changeAttackDefValues(atk, def, creatureType, 1, null, true, battleField.getEnemy());
             }
 
-		    List<CreatureCard> creatures = CardUtils2.toCreatureCardList(battleField.getAllCardsInBattleField());
+		    List<CreatureCard> creatures = CardUtils.toCreatureCardList(battleField.getAllCardsInBattleField());
 
 		    for (CreatureCard creature : creatures) {
 		        if(creature.getCreatureType() != creatureType) continue;

@@ -2,7 +2,7 @@ package fr.badcookie20.tga.listeners;
 
 import fr.badcookie20.tga.cards.FoundReason;
 import fr.badcookie20.tga.player.TGAPlayer;
-import fr.badcookie20.tga.utils.CardUtils2;
+import fr.badcookie20.tga.utils.CardUtils;
 import fr.badcookie20.tga.utils.NextUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -47,7 +47,7 @@ public class DefaultListener implements Listener {
 
         Player killer = dead.getKiller();
 
-        CardUtils2.giveRandomCard(TGAPlayer.getPlayer(killer), FoundReason.MOB);
+        CardUtils.giveRandomCard(TGAPlayer.getPlayer(killer), FoundReason.MOB);
     }
 
     @EventHandler
@@ -69,7 +69,7 @@ public class DefaultListener implements Listener {
         int gained = e.getAmount();
 
         if(gained >= 5) {
-            CardUtils2.giveRandomCard(p, FoundReason.XP_GAIN);
+            CardUtils.giveRandomCard(p, FoundReason.XP_GAIN);
         }
     }
 

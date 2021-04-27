@@ -359,7 +359,7 @@ public class TGAPlayer {
         if(type == null) {
             return this.getBattleField().getEnemy().getBattleField().getCards(BattleField.Location.BATTLEFIELD).get(clickedSlot);
         }else{
-            return CardUtils2.sort(this.getBattleField().getEnemy().getBattleField().getCards(BattleField.Location.BATTLEFIELD), type).get(clickedSlot);
+            return CardUtils.sort(this.getBattleField().getEnemy().getBattleField().getCards(BattleField.Location.BATTLEFIELD), type).get(clickedSlot);
         }
     }
 
