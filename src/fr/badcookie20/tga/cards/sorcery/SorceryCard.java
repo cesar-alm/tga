@@ -3,7 +3,7 @@ package fr.badcookie20.tga.cards.sorcery;
 import fr.badcookie20.tga.cards.EffectCard;
 import fr.badcookie20.tga.cards.Entity;
 import fr.badcookie20.tga.effect.Effect;
-import fr.badcookie20.tga.utils.CardUtils2;
+import fr.badcookie20.tga.utils.CardUtils;
 import org.bukkit.inventory.ItemStack;
 
 public class SorceryCard extends EffectCard {
@@ -14,6 +14,6 @@ public class SorceryCard extends EffectCard {
 
     @Override
     public ItemStack createItemStack() {
-        return CardUtils2.createItemStack(name, Type.SORCERY, manaCost, null, effects, -1, -1, null, false, this.uid);
+        return CardUtils.createItemStack(name, Type.SORCERY, manaCost, null, effects, -1, -1, null, false, this.uid);
     }
 }

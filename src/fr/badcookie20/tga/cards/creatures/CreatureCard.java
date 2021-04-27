@@ -7,7 +7,7 @@ import fr.badcookie20.tga.effect.Effect;
 import fr.badcookie20.tga.player.BattleField;
 import fr.badcookie20.tga.player.BattleField.Location;
 import fr.badcookie20.tga.player.TGAPlayer;
-import fr.badcookie20.tga.utils.CardUtils2;
+import fr.badcookie20.tga.utils.CardUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
@@ -85,7 +85,7 @@ public class CreatureCard extends EffectCard {
 	
 	@Override
 	public ItemStack createItemStack() {
-		return CardUtils2.createItemStack(name, Card.Type.CREATURE, this.manaCost, this.creatureType, this.effects, atk, tempDef, properties, hasAttacked, this.uid);
+		return CardUtils.createItemStack(name, Card.Type.CREATURE, this.manaCost, this.creatureType, this.effects, atk, tempDef, properties, hasAttacked, this.uid);
 	}
 
 	public void resetAttack() {

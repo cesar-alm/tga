@@ -7,7 +7,7 @@ import fr.badcookie20.tga.inventories.manager.InventoriesManager;
 import fr.badcookie20.tga.inventories.manager.InventoryType;
 import fr.badcookie20.tga.player.BattleField;
 import fr.badcookie20.tga.player.TGAPlayer;
-import fr.badcookie20.tga.utils.CardUtils2;
+import fr.badcookie20.tga.utils.CardUtils;
 import fr.badcookie20.tga.utils.NextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -71,7 +71,7 @@ public class InventoryListener implements Listener {
 
         if(type == Material.DOUBLE_PLANT || type == Material.LONG_GRASS) {
             if(action == Action.LEFT_CLICK_BLOCK) {
-                CardUtils2.giveRandomCard(tgaPlayer, FoundReason.PLANT);
+                CardUtils.giveRandomCard(tgaPlayer, FoundReason.PLANT);
             }
         }
     }
